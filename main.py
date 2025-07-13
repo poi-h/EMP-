@@ -4,7 +4,7 @@ import os
 import utils
 
 #发次号
-shot_id = 5
+shot_id = 65
 
 # 数据文件路径
 folder_path = os.path.expanduser('~/Desktop/data_EMP/')
