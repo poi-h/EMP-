@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import os
-import utils
+import plot_utils
 
 #发次号
 shot_id = 66
@@ -50,15 +50,15 @@ for a in range(6, 7):  # 只处理第5组数据
     E_sel = E[mask]
 
     # 绘制原始信号的时间序列图
-    fn = utils.signal_plot(E_sel, t_sel, a, shot_id, save_dir=save_dir, xlim=(t_sel.min(), t_sel.max()), ylim=(-0.35e3, 0.35e3))
+    fn = plot_utils.signal_plot(E_sel, t_sel, a, shot_id, save_dir=save_dir, xlim=(t_sel.min(), t_sel.max()), ylim=(-0.35e3, 0.35e3))
 
     # FFT
-    fn = utils.fft_plot(E_sel, fs, a, shot_id, save_dir=save_dir)
+    fn = plot_utils.fft_plot(E_sel, fs, a, shot_id, save_dir=save_dir)
     
     # 通过A_e修正的FFT
-    fn = utils.fft_plot_Ae(E_sel, fs, a, shot_id, save_dir=save_dir)
+    fn = plot_utils.fft_plot_Ae(E_sel, fs, a, shot_id, save_dir=save_dir)
 
     # Wavelet
-    fn = utils.cwt_plot(E_sel, t_sel, fs, a, shot_id, save_dir=save_dir, xlim=(t_sel.min(), t_sel.max()))
+    fn = plot_utils.cwt_plot(E_sel, t_sel, fs, a, shot_id, save_dir=save_dir, xlim=(t_sel.min(), t_sel.max()))
 
 print(f'{attenuate}')
