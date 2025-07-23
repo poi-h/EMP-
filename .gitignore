@@ -85,3 +85,13 @@ cython_debug/
 *~
 *.bak
 *.swp
+
+# Image files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.webp
+*.bmp
+*.tiff
