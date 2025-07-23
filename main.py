@@ -4,13 +4,13 @@ import os
 import utils
 
 #发次号
-shot_id = 65
+shot_id = 66
 
 # 数据文件路径
 folder_path = os.path.expanduser('~/Desktop/data_EMP/')
-fn1 = os.path.join(folder_path, '20Au', f'{shot_id:03d}.csv')
+fn1 = os.path.join(folder_path, 'mlpt', f'{shot_id:03d}.csv')
 fn2 = os.path.join(folder_path, 'attenuate.xlsx')
-save_dir = os.path.join(folder_path, '20Au', f'{shot_id:03d}')
+save_dir = os.path.join(folder_path, 'mlpt', f'{shot_id:03d}')
 if not os.path.exists(save_dir):
     os.makedirs(save_dir)
 
@@ -32,7 +32,7 @@ fs = 12.5e9
 dt = 1 / fs
 
 # 多组处理
-for a in range(5, 6):  # 只处理第5组数据
+for a in range(6, 7):  # 只处理第5组数据
 
     # 消除延迟
     tdelay = (tdelay1[a-1] - tdelay0) * np.ones(len(M[:, 3 * a - 2])) * 1e-9
@@ -45,20 +45,20 @@ for a in range(5, 6):  # 只处理第5组数据
     E = 27.46 * signal
 
     # 取 t=0 到 6e-8 区间
-    mask = (t >= 0) & (t <= 6e-8)
+    mask = (t >= -0.5e-8) & (t <= 2.5e-8)
     t_sel = t[mask]
     E_sel = E[mask]
 
     # 绘制原始信号的时间序列图
-    fn = utils.signal_plot(E_sel, t_sel, a, shot_id, save_dir=save_dir, ylim=(-0.6e5, 0.6e5))
+    fn = utils.signal_plot(E_sel, t_sel, a, shot_id, save_dir=save_dir, xlim=(t_sel.min(), t_sel.max()), ylim=(-0.35e3, 0.35e3))
 
-    # # FFT
-    # fn = utils.fft_plot(E_sel, fs, a, shot_id, save_dir=save_dir)
+    # FFT
+    fn = utils.fft_plot(E_sel, fs, a, shot_id, save_dir=save_dir)
     
-    # # 通过A_e修正的FFT
-    # fn = utils.fft_plot_Ae(E_sel, fs, a, shot_id, save_dir=save_dir)
+    # 通过A_e修正的FFT
+    fn = utils.fft_plot_Ae(E_sel, fs, a, shot_id, save_dir=save_dir)
 
-    # # Wavelet
-    # fn = utils.cwt_plot(E_sel, t_sel, fs, a, shot_id, save_dir=save_dir)
+    # Wavelet
+    fn = utils.cwt_plot(E_sel, t_sel, fs, a, shot_id, save_dir=save_dir, xlim=(t_sel.min(), t_sel.max()))
 
 print(f'{attenuate}')

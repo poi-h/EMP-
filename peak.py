@@ -6,7 +6,7 @@ import csv
 # 数据文件路径
 folder_path = os.path.expanduser('~/Desktop/data_EMP/')
 fn2 = os.path.join(folder_path, 'attenuate.xlsx')
-save_dir = os.path.join(folder_path, '20Au')
+save_dir = os.path.join(folder_path, 'mlpt')
 if not os.path.exists(save_dir):
     os.makedirs(save_dir)
 
@@ -22,7 +22,7 @@ fs = 12.5e9
 dt = 1 / fs
 
 # 要处理的shot_id列表（例如1到10）
-shot_id_list = [5, 10, 44, 48, 50, 57, 62, 63, 65]
+shot_id_list = [66,69,109,110,114]
 
 csv_path = os.path.join(save_dir, 'peak.csv')
 file_exists = os.path.isfile(csv_path)
@@ -31,7 +31,7 @@ with open(csv_path, 'a', newline='') as csvfile:
     if not file_exists:
         writer.writerow(['shot_id'] + [f'E_max_{a}' for a in range(1, 7)])
     for shot_id in shot_id_list:
-        fn1 = os.path.join(folder_path, '20Au', f'{shot_id:03d}.csv')
+        fn1 = os.path.join(folder_path, 'mlpt', f'{shot_id:03d}.csv')
         if not os.path.isfile(fn1):
             print(f"文件不存在: {fn1}")
             continue
