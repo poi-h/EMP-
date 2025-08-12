@@ -10,6 +10,7 @@ import matplotlib.ticker as ticker
 folder_path = os.path.expanduser('~/Desktop/data_EMP/')
 fn2 = os.path.join(folder_path, 'attenuate.xlsx')
 read_dir = os.path.join(folder_path, '20Au')
+save_dir = read_dir
 
 # 延迟参数
 tdelay0 = 198.646 - 45.08 + 13.55
@@ -52,7 +53,9 @@ for shot_id in shot_id_list:
         axs[a-1].yaxis.set_major_formatter(formatter)
     axs[3].set_ylabel("E(V/m)")
     axs[len(a_list)-1].set_xlabel("t(s)")
+    fn1 = os.path.join(save_dir, f'{shot_id:03d}_mlpt.png')
+    plt.suptitle(f'Shot ID: {shot_id:03d}', fontsize=16)
     plt.xlim(0, 6e-8)
     plt.subplots_adjust(top=0.95, wspace=0, hspace=0)
-    plt.savefig("fig.png", bbox_inches='tight', dpi=600)
+    plt.savefig(fn1, bbox_inches='tight', dpi=600)
     plt.show()
