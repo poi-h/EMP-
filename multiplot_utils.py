@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-def signal(x_list, y_list, labels=None, title='多曲线图', xlabel='X', ylabel='Y', save_path=None):
+def multiplot(x_list, y_list, labels=None, title='多曲线图', xlabel='X', ylabel='Y', save_path=None):
     """
     多条曲线画图工具
     参数:
