@@ -7,15 +7,15 @@ import plot_utils
 shot_id = 44
 
 # 数据文件路径
-folder_path = os.path.expanduser('~/Desktop/data_EMP/')
-fn1 = os.path.join(folder_path, '20Au', f'{shot_id:03d}.csv')
+folder_path = os.path.expanduser('~/Desktop/test/')
+fn1 = os.path.join(folder_path, 'test.xlsx')
 fn2 = os.path.join(folder_path, 'attenuate.xlsx')
-save_dir = os.path.join(folder_path, '20Au', f'{shot_id:03d}')
+save_dir = os.path.join(folder_path, 'picture', f'{shot_id:03d}')
 if not os.path.exists(save_dir):
     os.makedirs(save_dir)
 
 # 读取数据
-M = pd.read_csv(fn1, skiprows=14, header=None).values
+M = pd.read_excel(fn1, skiprows=14, header=None).values
 
 # 延迟
 tdelay0 = 198.646 - 45.08 + 13.55 # 13.55是根据信号对时间进行修正
@@ -44,21 +44,13 @@ for a in range(1, 2):  # 只处理第5组数据
     # 电场转换
     E = 27.46 * signal
 
-    # 取 t=0 到 6e-8 区间
-    mask = (t >= 0e-9) & (t <= 80e-9)
-    t_sel = t[mask]
-    E_sel = E[mask]
+    mask=(t>=20e-9)&(t<=80e-9)
+    E_sel=E[mask]
+    t_sel=t[mask]
 
     # 绘制原始信号的时间序列图
-    fn = plot_utils.signal_plot(E_sel, t_sel, a, shot_id, save_dir=save_dir, xlim=(t_sel.min(), t_sel.max()), ylim=(-0.35e3, 0.35e3))
+    fn = plot_utils.signal_plot(E_sel, t_sel, a, shot_id, save_dir=save_dir, xlim=(t_sel.min(), t_sel.max()), ylim=(-3.2e4, 3.2e4))
 
     # FFT
-    fn = plot_utils.fft_plot(E_sel, fs, a, shot_id, save_dir=save_dir)
-    
-    # 通过A_e修正的FFT
-    fn = plot_utils.fft_plot_Ae(E_sel, fs, a, shot_id, save_dir=save_dir, xlim=(0, 3e9))
+    fn = plot_utils.fft_plot(E_sel, fs, a, shot_id, save_dir=save_dir,xlim=(0,3e9))
 
-    # Wavelet
-    fn = plot_utils.cwt_plot(E_sel, t_sel, fs, a, shot_id, save_dir=save_dir, xlim=(t_sel.min(), t_sel.max()))
-
-print(f'{attenuate}')

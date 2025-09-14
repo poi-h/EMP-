@@ -93,12 +93,12 @@ def fft_plot_Ae(signal, fs, a, shot_id, save_dir='.', xlim=(0, 6e9), G_dBi=4, c=
     wavelengths = c / f
     A_e = G_linear * wavelengths ** 2 / (4 * np.pi)
     # 避免除以零
-    A_e[P1 == 0] = np.nan
+    # A_e[P1 == 0] = np.nan
     P1_Ae = P1 / A_e
 
     plt.figure()
     plt.plot(f, P1_Ae, color='g')
-    plt.title(f'Single-Sided Amplitude Spectrum (A_e corrected) {a}')
+    plt.title(f' shot 044 FFT(A_e corrected) {a}')
     plt.xlabel('Frequency (Hz)')
     plt.ylabel('|P1| / A_e')
     plt.gca().xaxis.set_major_formatter(ticker.ScalarFormatter(useMathText=True))

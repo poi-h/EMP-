@@ -10,7 +10,7 @@ shot_id = 44
 folder_path = os.path.expanduser('~/Desktop/data_EMP/')
 fn1 = os.path.join(folder_path, '20Au', f'{shot_id:03d}.csv')
 fn2 = os.path.join(folder_path, 'attenuate.xlsx')
-save_dir = os.path.join(folder_path, '20Au', f'{shot_id:03d}')
+save_dir = os.path.join(folder_path, 'phase', f'{shot_id:03d}')
 if not os.path.exists(save_dir):
     os.makedirs(save_dir)
 
@@ -44,21 +44,25 @@ for a in range(1, 2):  # 只处理第5组数据
     # 电场转换
     E = 27.46 * signal
 
-    # 取 t=0 到 6e-8 区间
-    mask = (t >= 0e-9) & (t <= 80e-9)
-    t_sel = t[mask]
-    E_sel = E[mask]
+    E_add = 0
+    t_add = np.random.randint(10,1000,size=8)
+    t_add = [10,30,100,400,700,1000,300,1200]
+
+    for b in range(0,8):
+
+        t=t+(t_add[b]*1e-12)
+
+        # 取 t=0 到 6e-8 区间
+        mask = (t >= 0e-9) & (t <= 80e-9)
+        t_sel = t[mask]
+        E_sel = E[mask]
+
+        E_add=E_add+E_sel
 
     # 绘制原始信号的时间序列图
-    fn = plot_utils.signal_plot(E_sel, t_sel, a, shot_id, save_dir=save_dir, xlim=(t_sel.min(), t_sel.max()), ylim=(-0.35e3, 0.35e3))
+    fn = plot_utils.signal_plot(E_add, t_sel, a, shot_id, save_dir=save_dir, xlim=(t_sel.min(), t_sel.max()), ylim=(-3.2e5, 3.2e5))
 
     # FFT
-    fn = plot_utils.fft_plot(E_sel, fs, a, shot_id, save_dir=save_dir)
-    
-    # 通过A_e修正的FFT
-    fn = plot_utils.fft_plot_Ae(E_sel, fs, a, shot_id, save_dir=save_dir, xlim=(0, 3e9))
+    fn = plot_utils.fft_plot(E_add, fs, a, shot_id, save_dir=save_dir,xlim=(0,3e9))
 
-    # Wavelet
-    fn = plot_utils.cwt_plot(E_sel, t_sel, fs, a, shot_id, save_dir=save_dir, xlim=(t_sel.min(), t_sel.max()))
-
-print(f'{attenuate}')
+    print(t_add)
