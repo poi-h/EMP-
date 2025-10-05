@@ -3,6 +3,7 @@ import numpy as np
 import pywt
 import os
 import openpyxl
+import pandas as pd
 
 def write_to_excel(file_path, data, sheet_name='sheet1', col_index=1, header=None):
     """
@@ -50,12 +51,12 @@ def signal_write(signal, t, a, shot_id, save_dir='.', col_index=1):
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     
-    fn = os.path.join(save_dir, f'signal_ch{a}.xlsx')
+    fn = os.path.join(save_dir, f'shot{shot_id}.xlsx')
 
     if col_index == 2:
         write_to_excel(fn,  data=t, col_index=1, header='Time(s)')
     
-    write_to_excel(fn,  data=signal, col_index=col_index, header=shot_id)
+    write_to_excel(fn,  data=signal, col_index=col_index, header=f'ch{a}')
 
     return fn
 
@@ -80,12 +81,12 @@ def fft_write(signal, fs, a, shot_id, save_dir='.', col_index=1):
         P1[1:-1] = 2 * P1[1:-1]  # 补偿能量
     f = fs * np.arange(0, L // 2) / L
 
-    fn = os.path.join(save_dir, f'fft_ch{a}.xlsx')
+    fn = os.path.join(save_dir, f'fft{shot_id}.xlsx')
 
     if col_index == 2:
         write_to_excel(fn,  data=f, col_index=1, header='Frequency(Hz)')
     
-    write_to_excel(fn,  data=P1, col_index=col_index, header=shot_id)
+    write_to_excel(fn,  data=P1, col_index=col_index, header=f'ch{a}')
     
     return fn
 
@@ -124,7 +125,7 @@ def fft_plot_Ae(signal, fs, a, shot_id, save_dir='.', G_dBi=4, c=3e8, col_index=
 
     return fn
 
-def cwt_plot(signal, t, fs, a, shot_id, save_dir='.', totalscal=8192, wavename='cmor1-1', xlim=(0, 6e-8), ylim=(0, 6e9)):
+def cwt_write(signal, t, fs, a, shot_id, save_dir='.', totalscal=8192, wavename='cmor1-1', xlim=(0, 6e-8), ylim=(0, 6e9)):
     """
     对信号 signal 做连续小波变换并保存图像。
     Perform continuous wavelet transform (CWT) on the signal and save the image.
@@ -147,20 +148,15 @@ def cwt_plot(signal, t, fs, a, shot_id, save_dir='.', totalscal=8192, wavename='
     scals = c / np.arange(1, totalscal + 1)
     f = fs * pywt.scale2frequency(wavename, scals)
     coefs, freqs = pywt.cwt(signal, scals, wavename)
-    plt.figure()
-    plt.imshow(np.abs(coefs), aspect='auto', extent=[t.min(), t.max(), f.max(), f.min()], cmap='jet')
-    plt.colorbar()
-    plt.title(f'Continuous Wavelet Transform {a}')
-    plt.xlabel('t(s)')
-    plt.ylabel('Frequency (Hz)')
-    plt.gca().xaxis.set_major_formatter(ticker.ScalarFormatter(useMathText=True))
-    plt.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
-    plt.gca().yaxis.set_major_formatter(ticker.ScalarFormatter(useMathText=True))
-    plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
-    plt.xlim(xlim)
-    plt.ylim(ylim)
-    fn = os.path.join(save_dir, f'{shot_id:03d}wavelet{a}.png')
-    plt.savefig(fn, dpi=600)
-    plt.close()
+    data = np.abs(coefs)
+    fn = os.path.join(save_dir, f'{shot_id:03d}wavelet{a}.xlsx')
+
+    # 转为 DataFrame
+    df = pd.DataFrame(data, index=freqs, columns=t)
+
+    # 写入 Excel 文件
+    df.to_excel(fn, index=True, header=True)
+
+
     return fn
 
