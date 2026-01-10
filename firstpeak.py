@@ -46,7 +46,13 @@ with open(csv_path, 'a', newline='') as csvfile:
             mask = (t >= -5e-9) & (t <= 5e-9)
             t_sel = t[mask]
             E_sel = E[mask]
-            E_max = np.max(np.abs(E_sel))
+            E = np.abs(E_sel)
+            t = t_sel
+            E_max = np.max(E)
+            for i in range(len(t)-1):
+                if E[i] > E_max*0.6 and E[i] > E[i-1] and E[i] > E[i+1]:
+                    E_max = np.abs(E[i])
+                    break
             E_max_list.append(E_max)
         writer.writerow([shot_id] + E_max_list)
 
