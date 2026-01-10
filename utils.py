@@ -330,10 +330,18 @@ def lowpass_filter(signal, fs, cutoff_freq):
     filtered_signal = signal.filtfilt(b, a, signal)
     return filtered_signal
 
-# 信号积分
+# B-dot信号积分
 def process_signal(t, signal, gain = 1, A = 1):
     dt = np.diff(t)
     B = np.zeros_like(signal)
     for i in range(1,len(signal)):
         B[i] = B[i-1] + (signal[i]/gain)/A * dt[i-1]
     return B
+
+# 积分能量
+def integrate_energy(t, signal):
+    dt = np.diff(t)
+    energy = 0.0
+    for i in range(1, len(signal)):
+        energy += 0.5 * (signal[i]**2 + signal[i-1]**2) * dt[i-1]
+    return energy
