@@ -353,7 +353,7 @@ def envelope(signal):
     return envelope
 
 # 绘图并标记峰值
-def plot_with_peaks(t, signal, x0, y0, shot_id, a, save_dir='.'):
+def plot_with_market(t, signal, x0, y0, shot_id, a, save_dir='.'):
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     plt.figure()
@@ -364,7 +364,7 @@ def plot_with_peaks(t, signal, x0, y0, shot_id, a, save_dir='.'):
              arrowprops=dict(arrowstyle="->"))
     plt.title(f'Signal with Peaks {a}')
     plt.xlabel('t(s)')
-    plt.ylabel('Signal Amplitude')
+    plt.ylabel('Signal')
     plt.legend()
     fn = os.path.join(save_dir, f'{shot_id:03d}peaks{a}.png')
     plt.savefig(fn, dpi=600)
