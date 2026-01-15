@@ -353,7 +353,7 @@ def envelope(signal):
     return envelope
 
 # 绘图并标记峰值
-def plot_with_market(t, signal, x0, y0, shot_id, a, save_dir='.'):
+def plot_with_mark(t, signal, x0, y0, shot_id, a, save_dir='.'):
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     plt.figure()
