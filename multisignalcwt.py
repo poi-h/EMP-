@@ -73,7 +73,7 @@ for shot_id in shot_id_list:
             extent=[t_sel.min()*1e9, t_sel.max()*1e9, f_cwt.max()*1e-9, f_cwt.min()*1e-9],
             cmap='jet', origin='upper'
         )
-        ax_cwt.set_ylabel('Frequency (GHz)', fontsize=24)
+        ax_cwt.set_ylabel('frequency/GHz', fontsize=24)
         # ax_cwt.set_title(f'Shot {shot_id:03d} CH{a} CWT')
         ax_cwt.set_ylim(0, 2)
         # ax_cwt.yaxis.set_major_locator(ticker.MaxNLocator(nbins=3))
@@ -91,8 +91,8 @@ for shot_id in shot_id_list:
         # 下：信号
         ax_sig = fig.add_subplot(gs[1, 0], sharex=ax_cwt)
         ax_sig.plot(t_sel*1e9, E_sel*1e-3, linewidth=2)
-        ax_sig.set_xlabel('t(ns)', fontsize=24)
-        ax_sig.set_ylabel('E(kV/m)', fontsize=24)
+        ax_sig.set_xlabel('time/ns', fontsize=24)
+        ax_sig.set_ylabel('electric field/kV/m', fontsize=24)
         # formatter = ticker.ScalarFormatter(useMathText=True)
         # formatter.set_scientific(True) 
         # formatter.set_powerlimits((3, 3))

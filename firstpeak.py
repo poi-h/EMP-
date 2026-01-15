@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import os
 import csv
+import scipy.signal as sig
+import utils
 
 # 数据文件路径
 folder_path = os.path.expanduser('~/Desktop/data_EMP/')
@@ -48,11 +50,17 @@ with open(csv_path, 'a', newline='') as csvfile:
             E_sel = E[mask]
             E = np.abs(E_sel)
             t = t_sel
-            E_max = np.max(E)
-            for i in range(len(t)-1):
-                if E[i] > E_max*0.6 and E[i] > E[i-1] and E[i] > E[i+1]:
-                    E_max = np.abs(E[i])
-                    break
+            
+            peaks, prop = sig.find_peaks(E_sel,
+                         height=H0,
+                         prominence=P0,
+                         distance=20,
+                         width=5)
+            index = peaks[0]
+            E_max = E_sel[index]
+            utils.plot_signal(t_sel, E_sel, t_sel[index], E_max, shot_id, a, save_dir)
             E_max_list.append(E_max)
+
+            
         writer.writerow([shot_id] + E_max_list)
 

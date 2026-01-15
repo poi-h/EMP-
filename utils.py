@@ -345,3 +345,28 @@ def integrate_energy(t, signal):
     for i in range(1, len(signal)):
         energy += 0.5 * (signal[i]**2 + signal[i-1]**2) * dt[i-1]
     return energy
+
+# 求信号包络线
+def envelope(signal):
+    analytic_signal = signal.hilbert(signal)
+    envelope = np.abs(analytic_signal)
+    return envelope
+
+# 绘图并标记峰值
+def plot_with_peaks(t, signal, x0, y0, shot_id, a, save_dir='.'):
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    plt.figure()
+    plt.plot(t, signal, label='Signal')
+    plt.annotate("",
+             xy=(x0, y0),
+             xytext=(x0+3e-9, y0*1.1),
+             arrowprops=dict(arrowstyle="->"))
+    plt.title(f'Signal with Peaks {a}')
+    plt.xlabel('t(s)')
+    plt.ylabel('Signal Amplitude')
+    plt.legend()
+    fn = os.path.join(save_dir, f'{shot_id:03d}peaks{a}.png')
+    plt.savefig(fn, dpi=600)
+    plt.close()
+    return fn
