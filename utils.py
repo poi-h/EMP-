@@ -4,7 +4,7 @@ import os
 import openpyxl
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
-from scipy import signal
+import scipy.signal as sig
 
 # 数据写入表格
 def write_to_excel(file_path, data, sheet_name='sheet1', col_index=1, header=None):
@@ -318,16 +318,16 @@ def cwt_plot(signal, t, fs, a, shot_id, save_dir='.', totalscal=8192, wavename='
 def highpass_filter(signal, fs, cutoff_freq):
     nyquist = 0.5 * fs
     normal_cutoff = cutoff_freq / nyquist
-    b, a = signal.butter(4, normal_cutoff, btype='high')
-    filtered_signal = signal.filtfilt(b, a, signal)
+    b, a = sig.butter(4, normal_cutoff, btype='high')
+    filtered_signal = sig.filtfilt(b, a, signal)
     return filtered_signal
 
 # 低通滤波器
 def lowpass_filter(signal, fs, cutoff_freq):
     nyquist = 0.5 * fs
     normal_cutoff = cutoff_freq / nyquist
-    b, a = signal.butter(4, normal_cutoff, btype='low')
-    filtered_signal = signal.filtfilt(b, a, signal)
+    b, a = sig.butter(4, normal_cutoff, btype='low')
+    filtered_signal = sig.filtfilt(b, a, signal)
     return filtered_signal
 
 # B-dot信号积分
@@ -348,7 +348,7 @@ def integrate_energy(t, signal):
 
 # 求信号包络线
 def envelope(signal):
-    analytic_signal = signal.hilbert(signal)
+    analytic_signal = sig.hilbert(signal)
     envelope = np.abs(analytic_signal)
     return envelope
 

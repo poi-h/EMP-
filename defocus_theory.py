@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.special import lambertw
 from scipy import constants
-
-import numpy as np
+import utils
+import os
 
 # =====================
 # 基本参数（按实验改）
@@ -12,7 +12,7 @@ lambda0 = 0.8e-6      # 激光波长 [m]
 w0 = 10e-6             # 焦点光斑半径 (1/e^2) [m]
 eta = 0.3           # 能量转换效率
 E_laser = 5.6        # 激光能量 [J]
-tau = 30e-15         # 脉宽 (FWHM) [s]
+tau = 40e-15         # 脉宽 (FWHM) [s]
 P = 0.6 *E_laser / tau           # 峰值功率 [W]  (能量/脉宽)
 
 # =====================
@@ -24,13 +24,13 @@ zR = np.pi * w0**2 / lambda0
 # 离焦量（单位 m）
 # =====================
 # z_d = np.array([0, 100e-6, 200e-6])
-z_d = np.linspace(0, 200e-6, 1200)
+z_d = np.linspace(-100e-6, 200e-6, 1200)
 
 # =====================
 # 光斑半径 & 峰值光强
 # =====================
 # w = w0 * np.sqrt(1 + (z_d / zR)**2)  # 高斯光束模型
-w =  0.18 / 1.2 * z_d + w0   # 几何离焦模型
+w =  0.18 / 1.2 * np.abs(z_d) + w0   # 几何离焦模型
 I0 = 1 * P / (np.pi * w**2)     # 峰值光强 [W/m^2]
 # a0 = 0.855e-5 * np.sqrt(I0 * lambda0**2)  # 归一化矢量势
 a0 = (constants.e * lambda0 / (2 * np.pi * constants.m_e * constants.c**2)) * np.sqrt(2 * I0 / (constants.epsilon_0 * constants.c))  # 归一化矢量势
@@ -102,3 +102,10 @@ plt.legend()
 plt.grid(True)
 plt.tight_layout()
 plt.show()
+
+# =====================
+# 结果写入文件
+# =====================
+fn = os.path.expanduser('~/Desktop/40fs.xlsx')
+utils.write_to_excel(fn, data=z_d, header='Defocus')
+utils.write_to_excel(fn, data=y_vals, col_index=2, header='N_esc')
