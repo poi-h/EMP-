@@ -9,7 +9,7 @@ import pywt
 # 数据文件路径
 folder_path = os.path.expanduser('~/Desktop/data_EMP/')
 fn2 = os.path.join(folder_path, 'attenuate.xlsx')
-folder = 'mlpt'
+folder = '20cudc'
 read_dir = os.path.join(folder_path, folder)
 save_dir = os.path.join(read_dir, 'pictures')
 
@@ -25,8 +25,8 @@ fs = 12.5e9
 dt = 1 / fs
 
 # 要处理的shot_id列表
-shot_id_list = [69,109,110,21,114]
-a_list = [1]
+shot_id_list = [34, 36, 54, 56, 68]
+a_list = range(1, 7)
 
 tmin=-5.5e-9
 tmax=74.5e-9
