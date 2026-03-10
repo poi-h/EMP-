@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import os
-import utils_excel as utils
+import utils
 
 #发次号
 shot_list = [44]
@@ -35,7 +35,7 @@ for shot_id in shot_list:
     dt = 1 / fs
 
     # 多组处理
-    for a in [1,5,6]:  # 只处理第5组数据
+    for a in [1]:  # 只处理第5组数据
 
         # 消除延迟
         tdelay = (tdelay1[a-1] - tdelay0) * np.ones(len(M[:, 3 * a - 2])) * 1e-9
@@ -62,6 +62,10 @@ for shot_id in shot_list:
         # fn = utils.fft_plot_Ae(E_sel, fs, a, shot_id, save_dir=save_dir, xlim=(0, 3e9))
 
         # Wavelet
-        fn = utils.cwt_write(E_sel, t_sel, fs, a, shot_id, save_dir=save_dir, xlim=(t_sel.min(), t_sel.max()))
+        # fn = utils.cwt_write(E_sel, t_sel, fs, a, shot_id, save_dir=save_dir, xlim=(t_sel.min(), t_sel.max()))
+
+        tau = utils.fit_damped_signal(t_sel, E_sel, max_peaks=200)
+
+        print("Decay time =", tau)
 
     print(f'{attenuate}')

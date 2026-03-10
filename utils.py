@@ -5,6 +5,8 @@ import openpyxl
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import scipy.signal as sig
+from scipy.signal import find_peaks
+from scipy.optimize import curve_fit
 
 # 数据写入表格
 def write_to_excel(file_path, data, sheet_name='sheet1', col_index=1, header=None):
@@ -370,3 +372,54 @@ def plot_with_mark(t, signal, x0, y0, shot_id, a, save_dir='.'):
     plt.savefig(fn, dpi=600)
     plt.close()
     return fn
+
+def fit_damped_signal(t, y, max_peaks=30, plot=True):
+
+    t = np.asarray(t)
+    y = np.asarray(y)
+
+    # 包络
+    y_abs = np.abs(y)
+
+    # 找峰值
+    threshold = 0.2 * np.max(y_abs)
+    peaks, _ = find_peaks(y_abs, distance=10, height=threshold)
+
+    t_peak = t[peaks]
+    y_peak = y_abs[peaks]
+
+    if len(t_peak) > max_peaks:
+        t_peak = t_peak[:max_peaks]
+        y_peak = y_peak[:max_peaks]
+
+    # 时间平移
+    t_env = t_peak - t_peak[0]
+
+    # 指数函数
+    def envelope(t, A0, tau):
+        return A0 * np.exp(-t/tau)
+
+    A0 = y_peak[0]
+    tau0 = (t_env[-1] - t_env[0]) / 3
+
+    popt, _ = curve_fit(envelope, t_env, y_peak, p0=[A0, tau0])
+    A_fit, tau = popt
+
+    # 生成拟合曲线
+    t_fit = t - t_peak[0]
+    y_fit = envelope(t_fit, A_fit, tau)
+
+    if plot:
+        plt.figure()
+
+        plt.plot(t, y_abs, label="signal")
+        plt.plot(t, y_fit, 'r--', label="envelope fit")
+        # plt.plot(t, -y_fit, 'r--')  # 下包络
+        plt.scatter(t_peak, y_peak, color='black', s=20, label="peaks")
+
+        plt.xlabel("t")
+        plt.ylabel("signal")
+        plt.legend()
+        plt.show()
+
+    return tau
