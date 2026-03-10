@@ -349,7 +349,7 @@ def integrate_energy(t, signal):
     return energy
 
 # 求信号包络线
-def envelope(signal):
+def ht(signal):
     analytic_signal = sig.hilbert(signal)
     envelope = np.abs(analytic_signal)
     return envelope
@@ -373,21 +373,29 @@ def plot_with_mark(t, signal, x0, y0, shot_id, a, save_dir='.'):
     plt.close()
     return fn
 
-def fit_damped_signal(t, y, max_peaks=30, plot=True):
+def fit_damped_signal(t, y, max_peaks=30, plot=True, save_dir='.', shot_id=0, a=0):
 
     t = np.asarray(t)
     y = np.asarray(y)
 
     # 包络
-    y_abs = np.abs(y)
+    # y_abs = np.abs(y)
+    y_abs = ht(y)
 
     # 找峰值
-    threshold = 0.2 * np.max(y_abs)
+    threshold = 0.1 * np.max(y_abs)
     peaks, _ = find_peaks(y_abs, distance=10, height=threshold)
 
     t_peak = t[peaks]
     y_peak = y_abs[peaks]
 
+    # -------- 从最大峰开始 --------
+    max_idx = np.argmax(y_peak)
+
+    t_peak = t_peak[max_idx:]
+    y_peak = y_peak[max_idx:]
+
+    # 限制峰数量
     if len(t_peak) > max_peaks:
         t_peak = t_peak[:max_peaks]
         y_peak = y_peak[:max_peaks]
@@ -405,21 +413,26 @@ def fit_damped_signal(t, y, max_peaks=30, plot=True):
     popt, _ = curve_fit(envelope, t_env, y_peak, p0=[A0, tau0])
     A_fit, tau = popt
 
-    # 生成拟合曲线
+    # 拟合曲线
     t_fit = t - t_peak[0]
     y_fit = envelope(t_fit, A_fit, tau)
 
     if plot:
         plt.figure()
 
-        plt.plot(t, y_abs, label="signal")
-        plt.plot(t, y_fit, 'r--', label="envelope fit")
-        # plt.plot(t, -y_fit, 'r--')  # 下包络
+        plt.plot(t, y, label="signal")
+        mask = (t >= t_peak[0])
+        t = t[mask]
+        y_fit = y_fit[mask]
+        plt.plot(t, y_fit, 'r--', label=rf'envelope fit ($\tau={tau*1e9:.2f}\,\mathrm{{ns}}$)')
         plt.scatter(t_peak, y_peak, color='black', s=20, label="peaks")
 
         plt.xlabel("t")
         plt.ylabel("signal")
         plt.legend()
-        plt.show()
+
+        fn = os.path.join(save_dir, f'{shot_id:03d}envelope_fit{a}.png')
+        plt.savefig(fn, dpi=300)
+        plt.close()
 
     return tau

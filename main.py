@@ -4,6 +4,8 @@ import os
 import utils
 
 #发次号
+# shot_list = [69,109,110,21,114]
+# shot_list = [34,36,54,56,68]
 shot_list = [44]
 
 b=1
@@ -13,7 +15,7 @@ for shot_id in shot_list:
     folder_path = os.path.expanduser('~/Desktop/data_EMP/')
     fn1 = os.path.join(folder_path, '20Au', f'{shot_id:03d}.csv')
     fn2 = os.path.join(folder_path, 'attenuate.xlsx')
-    save_dir = os.path.join(folder_path, '20Auxlsx')
+    save_dir = os.path.join(folder_path, 'mlptdecay')
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
@@ -35,7 +37,7 @@ for shot_id in shot_list:
     dt = 1 / fs
 
     # 多组处理
-    for a in [1]:  # 只处理第5组数据
+    for a in range(1, 7):  # 只处理第5组数据
 
         # 消除延迟
         tdelay = (tdelay1[a-1] - tdelay0) * np.ones(len(M[:, 3 * a - 2])) * 1e-9
@@ -48,9 +50,11 @@ for shot_id in shot_list:
         E = 27.46 * signal
 
         # 取 t=0 到 6e-8 区间
-        mask = (t >= 0e-9) & (t <= 70e-9)
+        mask = (t >= -5e-9) & (t <= 100e-9)
         t_sel = t[mask]
         E_sel = E[mask]
+
+
 
         # 绘制原始信号的时间序列图
         # fn = utils.signal_write(E_sel, t_sel, a, shot_id, save_dir=save_dir, col_index=a+1)
@@ -64,7 +68,11 @@ for shot_id in shot_list:
         # Wavelet
         # fn = utils.cwt_write(E_sel, t_sel, fs, a, shot_id, save_dir=save_dir, xlim=(t_sel.min(), t_sel.max()))
 
-        tau = utils.fit_damped_signal(t_sel, E_sel, max_peaks=200)
+        E_sel = E_sel - np.mean(E_sel)  # 去除直流分量
+        E = utils.highpass_filter(E_sel, fs, 50e6)
+        E = E - np.mean(E)  # 去除直流分量
+        # E = utils.ht(E)
+        tau = utils.fit_damped_signal(t_sel, E, max_peaks=200, plot=True, save_dir=save_dir, shot_id=shot_id, a=a)
 
         print("Decay time =", tau)
 
