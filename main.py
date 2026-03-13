@@ -4,18 +4,19 @@ import os
 import utils
 
 #发次号
-# shot_list = [69,109,110,21,114]
-# shot_list = [34,36,54,56,68]
-shot_list = [44]
+# shot_list = [69,109,110,21,114] #mlpt
+# shot_list = [34,36,54,56,68] #20Cudc
+# shot_list = [5,10,44,48,50,57,62,63,65] #20Au
+shot_list = [33,37,39,55,67,82,137] #1000Ta
 
 b=1
 for shot_id in shot_list:
     b=b+1
     # 数据文件路径
     folder_path = os.path.expanduser('~/Desktop/data_EMP/')
-    fn1 = os.path.join(folder_path, '20Au', f'{shot_id:03d}.csv')
+    fn1 = os.path.join(folder_path, '1000Ta', f'{shot_id:03d}.csv')
     fn2 = os.path.join(folder_path, 'attenuate.xlsx')
-    save_dir = os.path.join(folder_path, 'mlptdecay')
+    save_dir = os.path.join(folder_path, 'decay')
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
@@ -36,6 +37,7 @@ for shot_id in shot_list:
     # 时间分辨率
     dt = 1 / fs
 
+    tau_list = []
     # 多组处理
     for a in range(1, 7):  # 只处理第5组数据
 
@@ -72,8 +74,10 @@ for shot_id in shot_list:
         E = utils.highpass_filter(E_sel, fs, 50e6)
         E = E - np.mean(E)  # 去除直流分量
         # E = utils.ht(E)
-        tau = utils.fit_damped_signal(t_sel, E, max_peaks=200, plot=True, save_dir=save_dir, shot_id=shot_id, a=a)
-
-        print("Decay time =", tau)
+        tau = utils.fit_damped_signal(t_sel, E, max_peaks=200, plot=False, save_dir=save_dir, shot_id=shot_id, a=a)
+        tau_list.append(tau)
+    
+    fn3 = os.path.join(save_dir,'1000Tadecay.xlsx')
+    utils.write_to_excel(fn3, tau_list, sheet_name='sheet1', col_index=b, header=shot_id)
 
     print(f'{attenuate}')
