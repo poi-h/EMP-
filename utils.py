@@ -422,9 +422,9 @@ def fit_damped_signal(t, y, max_peaks=30, plot=True, save_dir='.', shot_id=0, a=
 
         plt.plot(t, y, label="signal")
         mask = (t >= t_peak[0])
-        t = t[mask]
+        t_fit = t[mask]
         y_fit = y_fit[mask]
-        plt.plot(t, y_fit, 'r--', label=rf'envelope fit ($\tau={tau*1e9:.2f}\,\mathrm{{ns}}$)')
+        plt.plot(t_fit, y_fit, 'r--', label=rf'envelope fit ($\tau={tau*1e9:.2f}\,\mathrm{{ns}}$)')
         plt.scatter(t_peak, y_peak, color='black', s=20, label="peaks")
 
         plt.xlabel("t")
@@ -434,5 +434,22 @@ def fit_damped_signal(t, y, max_peaks=30, plot=True, save_dir='.', shot_id=0, a=
         fn = os.path.join(save_dir, f'{shot_id:03d}envelope_fit{a}.png')
         plt.savefig(fn, dpi=300)
         plt.close()
+
+        # =========================
+        # 写入 Excel（三组数据）
+        # =========================
+        excel_path = os.path.join(save_dir, f'{shot_id:03d}_decay{a}.xlsx')
+
+        # 1️⃣ 原始信号
+        write_to_excel(excel_path, t, col_index=1, header='t (s)')
+        write_to_excel(excel_path, y, col_index=2, header='signal')
+
+        # 2️⃣ 峰值包络
+        write_to_excel(excel_path, t_peak, col_index=3, header='t_peak (s)')
+        write_to_excel(excel_path, y_peak, col_index=4, header='envelope_peak')
+
+        # 3️⃣ 拟合曲线
+        write_to_excel(excel_path, t_fit, col_index=5, header='t_fit (s)')
+        write_to_excel(excel_path, y_fit, col_index=6, header=f'y_fit(tau={tau*1e9:.2f})')
 
     return tau

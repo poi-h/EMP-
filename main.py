@@ -7,16 +7,17 @@ import utils
 # shot_list = [69,109,110,21,114] #mlpt
 # shot_list = [34,36,54,56,68] #20Cudc
 # shot_list = [5,10,44,48,50,57,62,63,65] #20Au
-shot_list = [33,37,39,55,67,82,137] #1000Ta
+# shot_list = [33,37,39,55,67,82,137] #1000Ta
+shot_list = [36]
 
 b=1
 for shot_id in shot_list:
     b=b+1
     # 数据文件路径
     folder_path = os.path.expanduser('~/Desktop/data_EMP/')
-    fn1 = os.path.join(folder_path, '1000Ta', f'{shot_id:03d}.csv')
+    fn1 = os.path.join(folder_path, '20Cudc', f'{shot_id:03d}.csv')
     fn2 = os.path.join(folder_path, 'attenuate.xlsx')
-    save_dir = os.path.join(folder_path, 'decay')
+    save_dir = os.path.join(folder_path, '20Cudcxlsx')
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
@@ -39,7 +40,7 @@ for shot_id in shot_list:
 
     tau_list = []
     # 多组处理
-    for a in range(1, 7):  # 只处理第5组数据
+    for a in range(1, 5):  # 只处理第5组数据
 
         # 消除延迟
         tdelay = (tdelay1[a-1] - tdelay0) * np.ones(len(M[:, 3 * a - 2])) * 1e-9
@@ -52,17 +53,17 @@ for shot_id in shot_list:
         E = 27.46 * signal
 
         # 取 t=0 到 6e-8 区间
-        mask = (t >= -5e-9) & (t <= 100e-9)
+        mask = (t >= -5e-9) & (t <= 80e-9)
         t_sel = t[mask]
         E_sel = E[mask]
 
 
 
         # 绘制原始信号的时间序列图
-        # fn = utils.signal_write(E_sel, t_sel, a, shot_id, save_dir=save_dir, col_index=a+1)
+        # fn = utils.signal_write(E_sel, t_sel, shot_id, a, save_dir=save_dir, col_index=a+1)
 
         # FFT
-        # fn = utils.fft_write(E_sel, fs, a, shot_id, save_dir=save_dir, col_index=a+1)
+        # fn = utils.fft_write(E_sel, fs, shot_id, a, save_dir=save_dir, col_index=a+1)
         
         # 通过A_e修正的FFT
         # fn = utils.fft_plot_Ae(E_sel, fs, a, shot_id, save_dir=save_dir, xlim=(0, 3e9))
@@ -74,10 +75,10 @@ for shot_id in shot_list:
         E = utils.highpass_filter(E_sel, fs, 50e6)
         E = E - np.mean(E)  # 去除直流分量
         # E = utils.ht(E)
-        tau = utils.fit_damped_signal(t_sel, E, max_peaks=200, plot=False, save_dir=save_dir, shot_id=shot_id, a=a)
+        tau = utils.fit_damped_signal(t_sel, E, max_peaks=200, plot=True, save_dir=save_dir, shot_id=shot_id, a=a)
         tau_list.append(tau)
     
-    fn3 = os.path.join(save_dir,'1000Tadecay.xlsx')
-    utils.write_to_excel(fn3, tau_list, sheet_name='sheet1', col_index=b, header=shot_id)
+    # fn3 = os.path.join(save_dir,'mlptdecay.xlsx')
+    # utils.write_to_excel(fn3, tau_list, sheet_name='sheet1', col_index=b, header=shot_id)
 
     print(f'{attenuate}')
