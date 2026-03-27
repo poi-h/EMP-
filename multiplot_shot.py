@@ -9,7 +9,7 @@ import pywt
 # 数据文件路径
 folder_path = os.path.expanduser('~/Desktop/data_EMP/')
 fn2 = os.path.join(folder_path, 'attenuate.xlsx')
-folder = '20cudc'
+folder = '20Cudc'
 read_dir = os.path.join(folder_path, folder)
 save_dir = os.path.join(read_dir, 'pictures')
 
